@@ -37,55 +37,60 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
-# Custom CSS for styling
+# Custom CSS for Light Theme Styling
 st.markdown("""
     <style>
     /* Main container styling */
     .main {
         padding-top: 2rem;
+        background-color: #ffffff;
     }
     
     /* Header styling */
     .header-title {
-        color: #1f77b4;
+        color: #0052a3;
         text-align: center;
         font-size: 2.5rem;
         font-weight: bold;
         margin-bottom: 0.5rem;
+        text-shadow: 0px 1px 3px rgba(0,0,0,0.1);
     }
     
     .header-subtitle {
         text-align: center;
-        color: #666;
+        color: #555555;
         font-size: 1.1rem;
         margin-bottom: 2rem;
     }
     
     /* Success message styling */
     .success-box {
-        background-color: #d4edda;
-        border: 1px solid #c3e6cb;
-        border-radius: 5px;
+        background-color: #e8f5e9;
+        border: 2px solid #4caf50;
+        border-radius: 8px;
         padding: 1rem;
         margin: 1rem 0;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
     }
     
     /* Info box styling */
     .info-box {
-        background-color: #d1ecf1;
-        border: 1px solid #bee5eb;
-        border-radius: 5px;
+        background-color: #e3f2fd;
+        border: 2px solid #2196f3;
+        border-radius: 8px;
         padding: 1rem;
         margin: 1rem 0;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
     }
     
     /* Output container styling */
     .output-container {
-        background-color: #f8f9fa;
-        border-left: 4px solid #1f77b4;
+        background: linear-gradient(135deg, #f5f7fa 0%, #ffffff 100%);
+        border-left: 5px solid #0052a3;
         padding: 1.5rem;
-        border-radius: 5px;
+        border-radius: 8px;
         margin: 1rem 0;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.08);
     }
     
     /* Statistics styling */
@@ -97,11 +102,13 @@ st.markdown("""
     }
     
     .stat-box {
-        background-color: #e7f3ff;
-        padding: 1rem;
-        border-radius: 5px;
+        background: linear-gradient(135deg, #f0f4ff 0%, #ffffff 100%);
+        padding: 1.2rem;
+        border-radius: 8px;
         flex: 1;
         min-width: 150px;
+        border: 1px solid #e0e8ff;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
     }
     
     /* Button styling */
@@ -110,6 +117,42 @@ st.markdown("""
         gap: 1rem;
         margin: 1rem 0;
         flex-wrap: wrap;
+    }
+    
+    /* Tab styling */
+    .stTabs {
+        background-color: #ffffff;
+    }
+    
+    /* Sidebar styling */
+    [data-testid="stSidebar"] {
+        background-color: #f8f9fa;
+        border-right: 1px solid #e0e0e0;
+    }
+    
+    /* Text styling */
+    body {
+        color: #333333;
+        background-color: #ffffff;
+    }
+    
+    /* Input and text area styling */
+    .stTextInput input,
+    .stTextArea textarea {
+        background-color: #ffffff;
+        border: 1px solid #d0d0d0;
+        color: #333333;
+    }
+    
+    /* Select box styling */
+    .stSelectbox {
+        background-color: #ffffff;
+    }
+    
+    /* Expander styling */
+    .stExpander {
+        background-color: #ffffff;
+        border: 1px solid #e0e0e0;
     }
     </style>
 """, unsafe_allow_html=True)

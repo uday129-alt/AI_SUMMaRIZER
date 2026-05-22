@@ -277,13 +277,19 @@ formatted = format_for_download("Title", text)
 ## ⚙️ Configuration
 
 ### Available Groq Models
-- `mixtral-8x7b-32768` (Default) - Fast and powerful
+- `llama-3.3-70b-versatile` (Recommended) - Most capable, best quality
+- `mixtral-8x7b-32768` - Fast and powerful
 - `llama3-8b-8192` - Lightweight and fast
 - `gemma-7b-it` - Instruction-tuned
 
-To change the model, modify in `summarizer.py`:
-```python
-summarizer = ContentSummarizer(model="llama3-8b-8192")
+To change the model, edit your `.env` file:
+```env
+GROQ_MODEL=llama-3.3-70b-versatile
+```
+
+Then restart the app:
+```bash
+streamlit run app.py
 ```
 
 ---

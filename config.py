@@ -19,8 +19,9 @@ GROQ_MODEL = os.getenv("GROQ_MODEL", "llama-3.3-70b-versatile")
 
 # Available Groq models
 AVAILABLE_MODELS = {
+    "llama-3.3-70b": "llama-3.3-70b-versatile",
     "mixtral": "mixtral-8x7b-32768",
-    "llama3": "llama3-8b-8192",
+    "llama3-8b": "llama3-8b-8192",
     "gemma": "gemma-7b-it",
 }
 
