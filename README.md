@@ -46,10 +46,35 @@ A powerful, beginner-friendly web application for intelligent content summarizat
 | **Python** | Backend programming language |
 | **Streamlit** | Web application framework |
 | **Groq API** | AI model for summarization |
+| **LangSmith** | Observability & tracing (optional) |
 | **PyPDF2** | PDF text extraction |
 | **BeautifulSoup4** | Web scraping |
 | **Requests** | HTTP client for web requests |
 | **python-dotenv** | Environment variable management |
+
+---
+
+## 🔍 LangSmith Integration (Observability & Tracing)
+
+**What is LangSmith?**
+LangSmith provides comprehensive observability and tracing for AI applications. It tracks every API call, response, error, and execution time, allowing you to monitor and debug your AI workflows in real-time.
+
+**Why Use LangSmith?**
+- 📊 **Monitor Performance**: Track API response times and success rates
+- 🐛 **Debug Errors**: View complete execution traces with context
+- 📈 **Analyze Usage**: Understand usage patterns and identify improvements
+- ✅ **Production-Ready**: Enterprise-grade monitoring for deployed applications
+- 🔐 **Data Security**: Traces are encrypted and stored securely
+
+**Tracked Data in LangSmith:**
+- Input prompts and parameters
+- AI model responses and outputs
+- Execution latency and performance metrics
+- Errors and exceptions with full context
+- Complete call stack and execution traces
+
+**View Your Traces:**
+All traces are available in your LangSmith dashboard at: https://smith.langchain.com/projects/
 
 ---
 
@@ -116,21 +141,48 @@ pip install -r requirements.txt
 4. Generate a new API key
 5. Copy the API key
 
+### Step 4.5: (Optional) Set Up LangSmith Tracing
+
+LangSmith provides observability and tracing for all AI operations. It's optional but highly recommended for monitoring and debugging.
+
+1. Visit [LangSmith](https://smith.langchain.com/)
+2. Sign up for a free account
+3. Navigate to **Settings** → **API Keys**
+4. Create a new API key and copy it
+
 ### Step 5: Configure Environment Variables
 
 ```bash
 # Copy the example file
 cp .env.example .env
 
-# Edit .env and add your Groq API key
-# .env should look like:
-# GROQ_API_KEY=your_actual_api_key_here
+# Edit .env and add your API keys:
+# GROQ_API_KEY=your_actual_groq_key_here
+#
+# For LangSmith (optional):
+# LANGSMITH_TRACING=true
+# LANGSMITH_API_KEY=your_langsmith_key_here
+# LANGSMITH_ENDPOINT=https://api.smith.langchain.com
+# LANGSMITH_PROJECT=AI_Summarizer
 ```
 
 **On Windows (PowerShell):**
 ```powershell
 Copy-Item .env.example .env
-# Then edit .env with your API key
+# Then edit .env with your API keys
+```
+
+**Your .env file should look like:**
+```ini
+# Required: Groq API Key
+GROQ_API_KEY=gsk_xxxxxxxxxxxxxxxxxxxxxxxxxxxx
+GROQ_MODEL=llama-3.3-70b-versatile
+
+# Optional: LangSmith Tracing (for observability)
+LANGSMITH_TRACING=true
+LANGSMITH_API_KEY=ls_xxxxxxxxxxxxxxxxxxxxxxxxxxx
+LANGSMITH_ENDPOINT=https://api.smith.langchain.com
+LANGSMITH_PROJECT=AI_Summarizer
 ```
 
 ### Step 6: Run the Application
@@ -188,11 +240,18 @@ git push origin main
 4. Select the repo and branch
 5. Set the main file path: `app.py`
 
-### Step 3: Add API Key as Secret
+### Step 3: Add API Keys as Secrets
 1. In Streamlit Cloud dashboard, go to **Settings** → **Secrets**
-2. Add your API key:
-```
-GROQ_API_KEY = "your_groq_api_key_here"
+2. Add your API keys:
+```ini
+GROQ_API_KEY = "gsk_xxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+GROQ_MODEL = "llama-3.3-70b-versatile"
+
+# Optional: Add LangSmith tracing (for observability)
+LANGSMITH_TRACING = "true"
+LANGSMITH_API_KEY = "ls_xxxxxxxxxxxxxxxxxxxxxxxxxxx"
+LANGSMITH_ENDPOINT = "https://api.smith.langchain.com"
+LANGSMITH_PROJECT = "AI_Summarizer"
 ```
 
 3. Deploy!
@@ -294,7 +353,101 @@ streamlit run app.py
 
 ---
 
-## 🐛 Troubleshooting
+## � LangSmith Observability Guide
+
+### Quick Setup
+
+1. **Sign Up for LangSmith** (Free)
+   - Visit: https://smith.langchain.com/
+   - Create a free account
+   - Navigate to **Settings** → **API Keys**
+   - Generate an API key
+
+2. **Add to `.env`**
+   ```ini
+   LANGSMITH_TRACING=true
+   LANGSMITH_API_KEY=your_api_key_from_smith
+   LANGSMITH_ENDPOINT=https://api.smith.langchain.com
+   LANGSMITH_PROJECT=AI_Summarizer
+   ```
+
+3. **Restart the App**
+   ```bash
+   streamlit run app.py
+   ```
+
+4. **View Your Traces**
+   - Go to: https://smith.langchain.com/projects/
+   - Select your project: "AI_Summarizer"
+   - Watch traces appear in real-time as you use the app
+
+### What Gets Tracked?
+
+Every time you generate a summary, LangSmith automatically captures:
+
+- **Input Data**: The text you're summarizing
+- **Parameters**: Summary type and tone selected
+- **Prompts**: The exact prompt sent to Groq
+- **Responses**: The full AI response
+- **Latency**: How long the API call took
+- **Errors**: Any exceptions or failures
+- **Metadata**: Timestamps and execution context
+
+### Example Trace View
+
+In your LangSmith dashboard, you'll see:
+```
+Project: AI_Summarizer
+├── Call 1: generate_summary
+│   ├── Input: summary_type="short", tone="professional"
+│   ├── Prompt: "You are an expert content summarizer..."
+│   ├── Output: "This is the generated summary..."
+│   ├── Latency: 2.34 seconds
+│   └── Status: Success ✓
+│
+├── Call 2: generate_summary
+│   ├── Input: summary_type="detailed", tone="academic"
+│   ├── Prompt: "You are an expert content summarizer..."
+│   ├── Output: "Comprehensive multi-paragraph summary..."
+│   ├── Latency: 4.12 seconds
+│   └── Status: Success ✓
+```
+
+### Debugging with LangSmith
+
+**Problem**: Summary is not what you expected
+- **Solution**: Go to LangSmith and check the exact prompt and response
+
+**Problem**: API calls are slow
+- **Solution**: Check latency in LangSmith for pattern analysis
+
+**Problem**: Errors when generating summaries
+- **Solution**: LangSmith shows full error traces with context
+
+### Disabling LangSmith
+
+If you want to disable tracing:
+```ini
+LANGSMITH_TRACING=false
+```
+
+The app will still work normally, just without observability traces.
+
+### Production Deployment
+
+On Streamlit Cloud, add to **Secrets** (Settings → Secrets):
+```toml
+LANGSMITH_TRACING = "true"
+LANGSMITH_API_KEY = "ls_your_key_here"
+LANGSMITH_ENDPOINT = "https://api.smith.langchain.com"
+LANGSMITH_PROJECT = "AI_Summarizer"
+```
+
+---
+
+## �🐛 Troubleshooting
+
+### Groq API Issues
 
 ### Error: "GROQ_API_KEY not found"
 - Solution: Check that `.env` file exists and contains `GROQ_API_KEY=your_key`
@@ -310,6 +463,29 @@ streamlit run app.py
 
 ### Slow Processing
 - Solution: Try "Short" summary type for faster results.
+
+### LangSmith Tracing Issues
+
+### Error: "⚠️ LangSmith tracing is enabled but LANGSMITH_API_KEY is not set"
+- **Solution**: Either disable tracing or add your LangSmith API key:
+  ```ini
+  LANGSMITH_TRACING=true
+  LANGSMITH_API_KEY=your_api_key
+  ```
+
+### Traces not appearing in LangSmith dashboard
+- **Check**: Ensure `LANGSMITH_TRACING=true` in `.env`
+- **Check**: Ensure `LANGSMITH_API_KEY` is valid
+- **Check**: Wait a few seconds; traces appear with slight delay
+- **Check**: Verify you're viewing the correct project in dashboard
+
+### "Invalid LangSmith API key" error
+- **Solution**: Go to https://smith.langchain.com/settings/api-keys
+- **Solution**: Generate a new API key and update `.env`
+
+### LangSmith slowing down the app
+- **Solution**: This is minimal; LangSmith tracing is lightweight
+- **Solution**: If concerned, disable with `LANGSMITH_TRACING=false`
 
 ---
 

@@ -1,11 +1,27 @@
 """
 Groq API Integration for Content Summarization
 This module handles all API calls to Groq for AI-powered summarization.
+
+LangSmith Integration:
+- Provides comprehensive tracing and observability for AI calls
+- Tracks prompts, responses, latency, and errors in LangSmith dashboard
+- Enable by setting LANGSMITH_TRACING=true in .env
+- Visit https://smith.langchain.com/ to view traces
 """
 
 import os
 from groq import Groq
 from dotenv import load_dotenv
+
+# Import LangSmith tracing decorator
+try:
+    from langsmith import traceable
+    LANGSMITH_AVAILABLE = True
+except ImportError:
+    LANGSMITH_AVAILABLE = False
+    # Fallback: create a no-op decorator if langsmith is not installed
+    def traceable(func):
+        return func
 
 # Load environment variables from .env file
 load_dotenv()
@@ -13,17 +29,20 @@ load_dotenv()
 
 class ContentSummarizer:
     """
-    A class to handle content summarization using Groq API.
+    A class to handle content summarization using Groq API with LangSmith tracing.
     
     Attributes:
         client: Groq API client
         model: The AI model to use for summarization
+        langsmith_enabled: Boolean indicating if LangSmith tracing is enabled
+        langsmith_api_key: API key for LangSmith (if available)
     """
     
     def __init__(self):
         """
         Initialize the ContentSummarizer with Groq API credentials.
         Reads both API key and model from environment variables (.env file).
+        Configures LangSmith tracing if enabled.
         """
         # Get API key from environment variables
         api_key = os.getenv("GROQ_API_KEY")
@@ -34,12 +53,32 @@ class ContentSummarizer:
                 "Please add it to your .env file."
             )
         
-        # Get model from environment variables (default: mixtral-8x7b-32768)
+        # Get model from environment variables (default: llama-3.3-70b-versatile)
         self.model = os.getenv("GROQ_MODEL", "llama-3.3-70b-versatile")
         
         # Initialize Groq client
         self.client = Groq(api_key=api_key)
+        
+        # ====================================================================
+        # LangSmith Tracing Configuration
+        # ====================================================================
+        # LangSmith provides observability for all AI operations
+        # This includes: prompts, responses, latency, errors, and execution traces
+        
+        self.langsmith_enabled = (
+            os.getenv("LANGSMITH_TRACING", "false").lower() == "true"
+        )
+        self.langsmith_api_key = os.getenv("LANGSMITH_API_KEY")
+        
+        # Log warning if tracing is enabled but no API key is set
+        if self.langsmith_enabled and not self.langsmith_api_key:
+            print(
+                "⚠️  LangSmith tracing is enabled but LANGSMITH_API_KEY is not set. "
+                "Traces will not be recorded. Get an API key from: "
+                "https://smith.langchain.com/settings/api-keys"
+            )
     
+    @traceable
     def generate_summary(
         self,
         text: str,
@@ -48,6 +87,17 @@ class ContentSummarizer:
     ) -> str:
         """
         Generate a summary of the given text using Groq API.
+        
+        This method is decorated with @traceable from LangSmith to provide
+        comprehensive observability. When enabled, every call is traced with:
+        - Input parameters (text, summary_type, tone)
+        - Generated prompt
+        - Groq API response
+        - Execution time
+        - Any errors or exceptions
+        
+        Traces can be viewed in the LangSmith dashboard:
+        https://smith.langchain.com/projects/
         
         Args:
             text: The text to summarize
@@ -97,6 +147,7 @@ Please provide the summary now. Ensure it captures the main ideas and is appropr
         
         try:
             # Call Groq API using chat completions
+            # This API call is traced by LangSmith (if enabled)
             completion = self.client.chat.completions.create(
                 model=self.model,
                 messages=[
@@ -111,10 +162,13 @@ Please provide the summary now. Ensure it captures the main ideas and is appropr
             )
             
             # Extract and return the summary
-            return completion.choices[0].message.content
+            summary = completion.choices[0].message.content
+            return summary
         
         except Exception as e:
-            raise Exception(f"Error calling Groq API: {str(e)}")
+            # LangSmith will automatically capture this error in the trace
+            error_message = f"Error calling Groq API: {str(e)}"
+            raise Exception(error_message)
     
     def check_api_status(self) -> bool:
         """

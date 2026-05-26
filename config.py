@@ -27,6 +27,22 @@ AVAILABLE_MODELS = {
 
 
 # ============================================================================
+# LANGSMITH TRACING CONFIGURATION
+# ============================================================================
+# LangSmith provides comprehensive observability for AI applications
+# Traces include: prompts, responses, latency, errors, and full execution logs
+# Dashboard: https://smith.langchain.com/
+
+LANGSMITH_TRACING_ENABLED = os.getenv("LANGSMITH_TRACING", "false").lower() == "true"
+LANGSMITH_API_KEY = os.getenv("LANGSMITH_API_KEY")
+LANGSMITH_ENDPOINT = os.getenv("LANGSMITH_ENDPOINT", "https://api.smith.langchain.com")
+LANGSMITH_PROJECT = os.getenv("LANGSMITH_PROJECT", "AI_Summarizer")
+
+# Note: LANGSMITH_API_KEY is required if tracing is enabled
+# Set LANGSMITH_TRACING=true in .env to enable observability
+
+
+# ============================================================================
 # STREAMLIT CONFIGURATION
 # ============================================================================
 
